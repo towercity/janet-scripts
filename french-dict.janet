@@ -54,3 +54,4 @@
 
 # todo
 # 1) take in multiple words, add mmultiple results
+# 2) a way to handle inflections
