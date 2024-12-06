@@ -8,7 +8,7 @@
 (def def
   ($< dict -d fd-fra-eng ,word -f))
 
-(prin def)
+# (prin def)
 
 (def peg
   ~{
@@ -18,18 +18,36 @@
     :definition-line (* :s+ (<- :term) :s+ (<- :pronunciation)
                          :s+ (<- :pos) :s)
     :translation-line (* :s+ (<- :a+))
-    :term (any (+ :a "-"))
+    :term (to :s)
     :pronunciation (* "/" (to "/") "/")
-    :pos (* "<" :a+ ">")
+    :pos (* "<" (to ">") ">")
     :words (any (+ :a :d "." "-" " "))
    })
 
 (def result (peg/match
               peg def))
+(def gender (cond
+              (string/find "masc" (result 2)) "m"
+              (string/find "fem" (result 2)) "f"
+              ""))
 
-(pp result)
-(print (result 1))
+(def flashcard (string/format ```
+* %s
+:PROPERTIES:
+:ANKI_NOTE_TYPE: French
+:END:
+** Word
+%s
+** English
+%s
+** Gender
+%s
+** Pronunciation
+%s
+``` (result 0) (result 0) (result 3) gender (result 1)))
+
+(print flashcard)
 
 # todo
 # 1) handle failed dict calls
-# 2) put it into flashcard shape :)
+# 2) take in multiple words, add mmultiple results
