@@ -5,23 +5,24 @@
 
 (cmd/def word (required :string))
 
-(defn get-flashcard-from-dict-result [def]
- (def peg
-      ~{
-        :main  (* :found-line :info-line :definition-line :translation-line)
-        :found-line (* :d+ " definition" (any "s") " found" :s)
-        :info-line (* :words :s :d+ :s :words :s :words :s)
-        :definition-line (* :s+ (<- :term) :s+ (<- :pronunciation)
-                            :s+ (<- :pos) :s)
-        :translation-line (* :s+ (<- :a+))
-        :term (to :s)
-        :pronunciation (* "/" (to "/") "/")
-        :pos (* "<" (to ">") ">")
-        :words (any (+ :a :d "." "-" " "))
-       })
+(def dict-result-peg
+  ~{
+    :main  (* :found-line :info-line :definition-line :translation-line)
+    :found-line (* :d+ " definition" (any "s") " found" :s)
+    :info-line (* :words :s :d+ :s :words :s :words :s)
+    :definition-line (* :s+ (<- :term) :s+ (<- :pronunciation)
+                        :s+ (<- :pos) :s)
+    :translation-line (* :s+ (<- :a+))
+    :term (to :s)
+    :pronunciation (* "/" (to "/") "/")
+    :pos (* "<" (to ">") ">")
+    :words (any (+ :a :d "." "-" " "))
+   })
 
+
+(defn get-flashcard-from-dict-result [def]
     (def result (peg/match
-                 peg def))
+                 dict-result-peg def))
     (def gender (cond
                   (string/find "masc" (result 2)) "m"
                   (string/find "fem" (result 2)) "f"
@@ -40,9 +41,7 @@
 %s
 ** Pronunciation
 %s
-``` (result 0) (result 0) (result 3) gender (result 1))
-
-    )
+``` (result 0) (result 0) (result 3) gender (result 1)))
 
 (try
   (do
