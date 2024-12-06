@@ -29,3 +29,7 @@
 
 (pp result)
 (print (result 1))
+
+# todo
+# 1) handle failed dict calls
+# 2) put it into flashcard shape :)
