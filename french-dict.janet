@@ -3,19 +3,12 @@
 (use sh)
 (import cmd)
 
-# (cmd/def word (required :string))
+(cmd/def word (required :string))
 
-# (def definition
-#   ($< dict -d fd-fra-eng ,word -f))
+(def def
+  ($< dict -d fd-fra-eng ,word -f))
 
-# (prin definition)
-
-(def test-def ```
-1 definition found
-dict.org	2628	fd-fra-eng	French-English FreeDict Dictionary ver. 0.4.1
-  je /ʒə/ <pron>
-  I
-```)
+(prin def)
 
 (def peg
   ~{
@@ -32,7 +25,7 @@ dict.org	2628	fd-fra-eng	French-English FreeDict Dictionary ver. 0.4.1
    })
 
 (def result (peg/match
-              peg test-def))
+              peg def))
 
 (pp result)
 (print (result 1))
