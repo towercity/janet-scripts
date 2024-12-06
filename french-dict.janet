@@ -53,5 +53,4 @@
    (print "failed")))
 
 # todo
-# 1) handle failed dict calls
-# 2) take in multiple words, add mmultiple results
+# 1) take in multiple words, add mmultiple results
