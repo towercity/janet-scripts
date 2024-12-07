@@ -14,12 +14,15 @@
 
 (def dict-result-peg
   ~{
-    :main  (* :found-line :info-line :definition-line :translation-line)
+    :main  (* :found-line
+              :info-line
+              :definition-line
+              :translation-line)
     :found-line (* :d+ " definition" (any "s") " found" :s)
     :info-line (* :words :s :d+ :s :words :s :words :s)
     :definition-line (* :s+ (<- :term) :s+ (<- :pronunciation)
                         :s+ (<- :pos) :s)
-    :translation-line (* :s+ (<- :a+))
+    :translation-line (* :s+ (<- (to :s)))
     :term (to :s)
     :pronunciation (* "/" (to "/") "/")
     :pos (* "<" (to ">") ">")
@@ -28,14 +31,13 @@
 
 
 (defn get-flashcard-from-dict-result [def]
-    (def result (peg/match
-                 dict-result-peg def))
-    (def gender (cond
-                  (string/find "masc" (result 2)) "m"
-                  (string/find "fem" (result 2)) "f"
-                  ""))
-    
-    (string/format ```
+  (def result (peg/match
+               dict-result-peg def))
+  (def gender (cond
+                (string/find "masc" (result 2)) "m"
+                (string/find "fem" (result 2)) "f"
+                ""))
+  (string/format ```
 * %s
 :PROPERTIES:
 :ANKI_NOTE_TYPE: French
@@ -48,12 +50,23 @@
 %s
 ** Pronunciation
 %s
+** Word Specifics
+** Example Sentence
+** Example Sentence Eng
+** Example Sentence 2
+** Example Sentence 2 Eng
+** Example Sentence 3
+** Example Sentence 3 Eng
+** Recording
+** Compound
+** Plural
+** Past Participle
 
 ``` (result 0) (result 0) (result 3) gender (result 1)))
 
 # open our files
 (def output (file/open "output.org" :w))
-(def failures (file/open "failures.txt" :w))
+(def failures (file/open "failures.txt" :a))
 
 # add the header to the output :)
 (file/write output ```
@@ -84,5 +97,4 @@
 (file/close failures)
 
 # todo
-# 1) take in multiple words, add mmultiple results
-# 2) a way to handle inflections
+# 1) a way to handle inflections
