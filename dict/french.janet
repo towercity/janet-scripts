@@ -1,9 +1,16 @@
 #!/usr/bin/env janet
 
 (use sh)
-(import cmd)
 
-(cmd/def word (required :string))
+# pull in words from input all at once :)
+(def words-list
+  (peg/match
+   ~{
+     :main (some (* :line "\n"))
+     :line (<- (to :s))
+    }
+   (slurp "./input.txt")))
+
 
 (def dict-result-peg
   ~{
@@ -41,16 +48,40 @@
 %s
 ** Pronunciation
 %s
+
 ``` (result 0) (result 0) (result 3) gender (result 1)))
 
-(try
-  (do
-    (def def
-      ($< dict -d fd-fra-eng ,word -f))
-    (print (get-flashcard-from-dict-result def)))
-  
-  ([err fiber]
-   (print "failed")))
+# open our files
+(def output (file/open "output.org" :w))
+(def failures (file/open "failures.txt" :w))
+
+# add the header to the output :)
+(file/write output ```
+:PROPERTIES:
+:ANKI_DECK: 03 - French
+:ANKI_TAGS: nf
+:END:
+
+```)
+
+(each word words-list
+  (try
+    (do
+      (def def
+        ($< dict -d fd-fra-eng ,word -f))
+      (file/write
+       output (get-flashcard-from-dict-result
+               # getting the dict result all the way down here
+               ($< dict -d fd-fra-eng ,word -f))))
+    
+    ([err fiber]
+     (file/write failures
+                 (string/format "%s\n" word)))))
+
+(file/flush output)
+(file/flush failures)
+(file/close output)
+(file/close failures)
 
 # todo
 # 1) take in multiple words, add mmultiple results
