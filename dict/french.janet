@@ -22,7 +22,7 @@
     :info-line (* :words :s :d+ :s :words :s :words :s)
     :definition-line (* :s+ (<- :term) :s+ (<- :pronunciation)
                         :s+ (<- :pos) :s)
-    :translation-line (* :s+ (<- (to :s)))
+    :translation-line (* :s+ (<- (any 1)))
     :term (to :s)
     :pronunciation (* "/" (to "/") "/")
     :pos (* "<" (to ">") ">")
@@ -62,7 +62,11 @@
 ** Plural
 ** Past Participle
 
-``` (result 0) (result 0) (result 3) gender (result 1)))
+``` (result 0)
+                 (result 0)
+                 (string/replace "  " "" (result 3))
+                 gender
+                 (result 1)))
 
 # open our files
 (def output (file/open "output.org" :w))
