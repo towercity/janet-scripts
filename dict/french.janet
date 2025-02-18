@@ -2,14 +2,17 @@
 
 (use sh)
 
+(def input-file "./input.txt")
+
 # pull in words from input all at once :)
+# todo: handle phrases, ie words with spaces
 (def words-list
   (peg/match
    ~{
      :main (some (* :line "\n"))
      :line (<- (to :s))
     }
-   (slurp "./input.txt")))
+   (slurp input-file)))
 
 
 (def dict-result-peg
@@ -82,6 +85,7 @@
 ```)
 
 (each word words-list
+  (print "trying " word ":")
   (try
     (do
       (def def
@@ -100,5 +104,9 @@
 (file/close output)
 (file/close failures)
 
+# and, if we got this far without fail, erase input
+(spit input-file "")
+
 # todo
 # 1) a way to handle inflections
+# 2) ignore empty string
